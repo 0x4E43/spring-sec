@@ -13,8 +13,13 @@ public class SecurityApplication {
 		SpringApplication.run(SecurityApplication.class, args);
 	}
 
-	@GetMapping
+	@GetMapping(value = "/private")
 	public String test(){
-		return "Hello World";
+		return "This is an private end-point";
+	}
+
+	@GetMapping(value = "/public")
+	public String publicEndpoint(){
+		return "This is an public end-point";
 	}
 }
