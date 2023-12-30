@@ -17,7 +17,8 @@ public class SecConfig {
     SecurityFilterChain doFilter(HttpSecurity http) throws Exception{
         //allow all endPoint
         http.authorizeHttpRequests(
-                (auth) -> auth.requestMatchers("/**").permitAll()
+                (auth) -> auth
+                        .requestMatchers("/public").permitAll()
         );
         return http.build();
     }
