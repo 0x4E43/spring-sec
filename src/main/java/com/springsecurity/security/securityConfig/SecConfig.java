@@ -3,6 +3,7 @@ package com.springsecurity.security.securityConfig;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -18,8 +19,9 @@ public class SecConfig {
         //allow all endPoint
         http.authorizeHttpRequests(
                 (auth) -> auth
-                        .requestMatchers("/public").permitAll()
-        );
+                        .requestMatchers("/public", "/login").permitAll()
+                        .anyRequest().authenticated()
+        ).httpBasic(Customizer.withDefaults());
         return http.build();
     }
 }

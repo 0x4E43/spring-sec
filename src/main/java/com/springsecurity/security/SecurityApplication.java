@@ -22,4 +22,9 @@ public class SecurityApplication {
 	public String publicEndpoint(){
 		return "This is an public end-point";
 	}
+
+	@GetMapping(value = "/login")
+	public String loginEndpoint(){
+		return "This is an loginS end-point";
+	}
 }
