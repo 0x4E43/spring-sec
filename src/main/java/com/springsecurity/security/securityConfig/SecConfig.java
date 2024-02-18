@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +24,9 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -38,9 +42,11 @@ public class SecConfig {
     @Bean
     SecurityFilterChain doFilter(HttpSecurity http) throws Exception {
         //allow all endPoint
-        http.authorizeHttpRequests(
+        http
+                .csrf(AbstractHttpConfigurer::disable) //Disabling CSRF as per Spring Security 6
+                .authorizeHttpRequests(
                 (auth) -> auth
-                        .requestMatchers("/public", "/login").permitAll()
+                        .requestMatchers("/public", "/login", "/user/login").permitAll()
                         .anyRequest().authenticated()
         ).httpBasic(Customizer.withDefaults());
         return http.build();
