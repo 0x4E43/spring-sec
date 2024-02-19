@@ -1,12 +1,37 @@
 package com.springsecurity.security.user;
 
+import com.springsecurity.security.securityConfig.AuthProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl {
 
+    @Autowired
+    AuthProvider authProvider;
     public  String loginUser(UserVO vo){
         //use authentication
-        return vo.getUsername();
+        try{
+            Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(
+                    vo.getUsername(), vo.getPassword()
+            ));
+
+            if(authentication.isAuthenticated()){
+                return vo.getUsername();
+            }else{
+                return "Invalid credential";
+            }
+        }catch (Exception e){
+            return  e.getMessage();
+        }
+    }
+
+    public String generatePasswordForInitialUSer() {
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.encode("password");
     }
 }

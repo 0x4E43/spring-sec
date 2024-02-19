@@ -28,7 +28,7 @@ public class SecurityApplication {
 
 	@GetMapping(value = "/public")
 	public String publicEndpoint(){
-		return "This is an public end-point";
+		return userServiceImpl.generatePasswordForInitialUSer();
 	}
 
 	@GetMapping(value = "/login")

@@ -33,7 +33,7 @@ public class AuthProvider implements AuthenticationProvider {
             throw new UsernameNotFoundException("User not found");
         }
         // Example: validating credentials
-        if (!password.equals(userDetails.getPassword())) {
+        if (!password.equals(userDetails.getPassword())) { //need to match password as per hash
             throw new AuthenticationException("Invalid credentials") {};
         }
         // Create a fully authenticated Authentication object
