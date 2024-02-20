@@ -21,6 +21,7 @@ public class UserServiceImpl {
             ));
 
             if(authentication.isAuthenticated()){
+                // TODO: Generate JWT token and return to user here
                 return vo.getUsername();
             }else{
                 return "Invalid credential";
