@@ -36,6 +36,12 @@ public class SecurityApplication {
 		return "This is an loginS end-point";
 	}
 
+	@GetMapping(value = "/end-point-private")
+	public String endPointPrivate(){
+		return "This is an private end-point";
+	}
+
+
 
 	@PostMapping(value = "/user/login")
 	public String loginUser(@RequestBody UserVO userVO) {

@@ -9,6 +9,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ public class AuthProvider implements AuthenticationProvider {
             throw new UsernameNotFoundException("User not found");
         }
         // Example: validating credentials
-        if (!password.equals(userDetails.getPassword())) { //TODO: need to match password as per hash
+        if (!this.passwordCheck(password, userDetails.getPassword())) {
             throw new AuthenticationException("Invalid credentials") {};
         }
         // Create a fully authenticated Authentication object
@@ -45,5 +47,11 @@ public class AuthProvider implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> authentication) {
         return  authentication.equals(UsernamePasswordAuthenticationToken.class);
+    }
+
+
+    private boolean passwordCheck(String rawPassword, String hash){
+        PasswordEncoder encoder= new BCryptPasswordEncoder();
+        return encoder.matches(rawPassword, hash);
     }
 }

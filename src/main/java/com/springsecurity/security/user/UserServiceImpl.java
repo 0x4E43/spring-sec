@@ -1,6 +1,7 @@
 package com.springsecurity.security.user;
 
 import com.springsecurity.security.securityConfig.AuthProvider;
+import com.springsecurity.security.securityConfig.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,10 @@ public class UserServiceImpl {
 
     @Autowired
     AuthProvider authProvider;
+
+    @Autowired
+    JWTService jwtService;
+
     public  String loginUser(UserVO vo){
         //use authentication
         try{
@@ -22,7 +27,8 @@ public class UserServiceImpl {
 
             if(authentication.isAuthenticated()){
                 // TODO: Generate JWT token and return to user here
-                return vo.getUsername();
+                String jwtToken = jwtService.generateToken(vo.getUsername());
+                return vo.getUsername()+" "+ jwtToken;
             }else{
                 return "Invalid credential";
             }

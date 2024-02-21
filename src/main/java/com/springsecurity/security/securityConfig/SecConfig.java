@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +25,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
@@ -38,17 +40,37 @@ public class SecConfig {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtAuthFilter jwtAuthFilter;
+
+
+//    @Bean
+//    SecurityFilterChain doFilter(HttpSecurity http) throws Exception {
+//        //allow all endPoint
+//        http
+//                .csrf(AbstractHttpConfigurer::disable) //Disabling CSRF as per Spring Security 6
+//                .authorizeHttpRequests(
+//                (auth) -> auth
+//                        .requestMatchers("/public", "/login", "/user/login").permitAll()
+//                        .anyRequest().authenticated()
+//        ).httpBasic(Customizer.withDefaults());
+//        return http.build();
+//    }
+
 
     @Bean
-    SecurityFilterChain doFilter(HttpSecurity http) throws Exception {
+    SecurityFilterChain doFilterV2(HttpSecurity http) throws Exception {
         //allow all endPoint
         http
                 .csrf(AbstractHttpConfigurer::disable) //Disabling CSRF as per Spring Security 6
                 .authorizeHttpRequests(
-                (auth) -> auth
-                        .requestMatchers("/public", "/login", "/user/login").permitAll()
-                        .anyRequest().authenticated()
-        ).httpBasic(Customizer.withDefaults());
+                        (auth) -> auth
+                                .requestMatchers("/public", "/login", "/user/login").permitAll()
+                                .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -58,6 +80,14 @@ public class SecConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
